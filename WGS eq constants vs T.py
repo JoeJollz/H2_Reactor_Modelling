@@ -8,6 +8,8 @@ Water Gas Shift (WGS) reaction. Simple code of the WGS reaction constants vs Tem
 This is crucial to prove that for the temperature range my reactor is operating at, if I can oxidise my oxygen carries in a CO2 environment, I can certainly oxidise my oxygen carriers in an H2O environment, leaving H2(g)!
 
 """
+
+# testing
 import numpy as np
 import matplotlib.pyplot as plt
 
