@@ -8,6 +8,24 @@ class MassFlowController:
         self.mfc_number = mfc_number
         
     def CO2_CO_reading(self, desired_mass_flow_lpm, guage_pressure):
+        '''
+        
+
+        Parameters
+        ----------
+        desired_mass_flow_lpm : float
+            Litres per min of CO2 gas.
+        guage_pressure : int
+            Gauage pressure (bar).
+
+        Returns
+        -------
+        vol_flow : flaot
+            equiv volume flow of CO2 litres per min.
+        rate : float
+            0-32000 is equivalent to 0-100% MFC valve open.
+
+        '''
         # assuming 32000 corresponds to 100% flow. 
         guage_pressure = int(guage_pressure)
         
@@ -29,7 +47,7 @@ if __name__ == "__main__":
     
     mass_flow, baudrate = mfc.CO2_CO_reading(desired_flow_rate_CO2,guage_pressure)
     
-    print(f"Mass flow to set for MFC number 1: {mass_flow} ln/min, with baudrate {baudrate}")
+    print(f"Mass flow to set for MFC number 1: {mass_flow} ln/min, with rate {baudrate}")
     
     
     
