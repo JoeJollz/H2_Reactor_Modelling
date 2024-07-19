@@ -8,9 +8,17 @@ class MassFlowController:
         self.mfc_number = mfc_number
         
     def CO2_CO_reading(self, desired_mass_flow_lpm, guage_pressure):
+        # assuming 32000 corresponds to 100% flow. 
+        guage_pressure = int(guage_pressure)
         
+        CF_co_air = MFC_Converter.CO_Air_CF[2]
+        CF_co2_air = MFC_Converter.CO2_Air_CF[2]
         
-        return mass_flow, baudrate
+        vol_flow = desired_mass_flow_lpm/CF_co2_air*CF_co_air
+        
+        rate = vol_flow/20
+        
+        return vol_flow, rate
         
 if __name__ == "__main__":
     
