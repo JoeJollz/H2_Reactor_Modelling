@@ -16,7 +16,7 @@ class MassFlowController:
         
         vol_flow = desired_mass_flow_lpm/CF_co2_air*CF_co_air
         
-        rate = vol_flow/20
+        rate = vol_flow/20*32000
         
         return vol_flow, rate
         
