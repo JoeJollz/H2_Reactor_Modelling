@@ -17,13 +17,13 @@ import matplotlib.pyplot as plt
 temps_K = np.linspace(273.15+-99,273.15+234.95, 200) # kelvins
 temps_degC = temps_K - 273.15 # K to °C
 
-def sat_T_to_sat_P(temps_K):
+def sat_T_to_sat_P(temps_degC):
     '''
     Acetone saturation conversion
     Parameters
     ----------
     temps_K : FLOAT
-        Temperature in Kelvin.
+        Temperature in °C.
 
     Returns
     -------
@@ -31,6 +31,7 @@ def sat_T_to_sat_P(temps_K):
         Saturation Pressure (bar).
 
     '''
+    temps_K = temps_degC + 273.15 # °C to K
     
     # constants #
     A = 4.42448
@@ -39,8 +40,9 @@ def sat_T_to_sat_P(temps_K):
     
     log_Pressure_bar = A - (B/(temps_K+C))
     Sat_Pressure_bar = 10**(log_Pressure_bar)
+    Sat_Pressure_Pa = Sat_Pressure_bar*100000
     
-    return Sat_Pressure_bar
+    return Sat_Pressure_bar, Sat_Pressure_Pa
 
 def Tsat_P(Pressure):
     '''
@@ -68,7 +70,7 @@ def Tsat_P(Pressure):
     
     return Temp_degC
 
-Sat_Pressure_bar = sat_T_to_sat_P(temps_K)
+Sat_Pressure_bar, _ = sat_T_to_sat_P(temps_K)
 
 plt.plot(temps_K, Sat_Pressure_bar)
 
