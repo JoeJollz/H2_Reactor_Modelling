@@ -108,12 +108,28 @@ class Flash_Model:
             Mass ratio, vapor mass/total mass.
 
         '''
-        if operating_error_check:
+        self.operating_error_check
             
-            Enthalpy_upstream_liquid = H_TP(temperature, pressure_upstream, int(1))
-            Enthalpy_downstream_liquid = H_TP(temperature, pressure_downstream, int(1))
-            Enthalpy_downstream_vapor = H_TP(temperature, pressure_downstream, int(0))
+        Enthalpy_upstream_liquid = self.H_TP(temperature, pressure_upstream, int(1))
+        Enthalpy_downstream_liquid = self.H_TP(temperature, pressure_downstream, int(1))
+        Enthalpy_downstream_vapor = self.H_TP(temperature, pressure_downstream, int(0))
             
-            vapor_content = (Enthalpy_upstream_liquid-Enthalpy_downstream_liquid)/(Enthalpy_downstream_vapor-Enthalpy_downstream_liquid)    
+        vapor_content = (Enthalpy_upstream_liquid-Enthalpy_downstream_liquid)/(Enthalpy_downstream_vapor-Enthalpy_downstream_liquid)    
         
         return vapor_content
+    
+
+if __name__ == "__main__":
+    # Create an instance of the Reaction class
+    reaction = Flash_Model("Example Reaction")
+    
+    # Define test inputs
+    temperature = 100  # degrees Celsius
+    pressure_upstream = 2000000  # Pascals
+    pressure_downstream = 100000  # Pascals
+    
+    # Perform the calculation
+    vapor_content = Flash_Model.vapor_content(temperature, pressure_upstream, pressure_downstream)
+    
+    # Print the result
+    print(f"Vapor Content: {vapor_content}")
