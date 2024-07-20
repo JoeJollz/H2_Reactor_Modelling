@@ -17,13 +17,19 @@ import matplotlib.pyplot as plt
 temps_K = np.linspace(273.15+-99,273.15+234.95, 200) # kelvins
 temps_degC = temps_K - 273.15 # deg C
 
-# constants #
-A = 4.42448
-B = 1312.253
-C = -32.445
+def sat_T_to_sat_P(temps_K):
+    
+    # constants #
+    A = 4.42448
+    B = 1312.253
+    C = -32.445
+    
+    log_Pressure_bar = A - (B/(temps_K+C))
+    Sat_Pressure_bar = 10**(log_Pressure_bar)
+    
+    return Sat_Pressure_bar
 
-log_Pressure_bar = A - (B/(temps_K+C))
-Sat_Pressure_bar = 10**(log_Pressure_bar)
+Sat_Pressure_bar = sat_T_to_sat_P(temps_K)
 
 plt.plot(temps_K, Sat_Pressure_bar)
 
