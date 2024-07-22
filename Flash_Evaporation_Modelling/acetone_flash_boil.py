@@ -60,8 +60,7 @@ class Flash_Model:
         Enthalpy : Float
             Enthalpy of the working fluid.
     
-        '''
-        
+        ''' 
     #TO DO: possibly add a checker in to check it is liquid or gas. 
         if phase == 0:
             # gas
