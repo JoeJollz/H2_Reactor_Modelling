@@ -89,8 +89,6 @@ class Flash_Model:
         
         return Enthalpy  
         
-        
-    
     def vapor_content(self, temperature, pressure_upstream, pressure_downstream):
         '''
         Parameters
@@ -118,7 +116,6 @@ class Flash_Model:
         
         return vapor_content
     
-
 if __name__ == "__main__":
     # Create an instance of the Reaction class
     reaction = Flash_Model("Example Reaction")
