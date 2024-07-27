@@ -87,6 +87,8 @@ fig1, ax1 = plt.subplots()
 
 cooldown = coolup =c = 0
 ## peak remover ## and conversion curve plotter. Here we identify and plot the reduction and oxidation curves. 
+
+## OXIDATION CONVERSION CURVE PLOTS ##
 for i in range(0,len(df)-1):
     #print(df['Value [mg]'][i]/df['Value [mg]'][i-1]/1.008>1)
     if (df['Value [mg]'][i]/(df['Value [mg]'][i-1])>1.008 and 
@@ -139,13 +141,13 @@ for i in range(0,len(df)-1):
             
     cooldown -= 0.1
     cooldown = max(cooldown, 0)
-        
-    # if df['Value [mg]'][i]>max_peaks:
-    #     df['Value [mg]'][i] = df['Value [mg]'][i+4]
-    #     df['Value [mg]'][i] = df['Value [mg]'][i+4]
+
+
+
+## REDUCTION CONVERSION CURVE PLOTS ##
 c=0
 cooldown = 0
-#fig2, ax2 = plt.subplots()
+
 for i in range(0,len(df)-1):
     if df['Value [mg]'][i]>1500:
         print('bingo')
@@ -187,24 +189,13 @@ for i in range(0,len(df)-1):
             #fig2, ax2 = plt.subplots()
             
             c = 0
-                
-                
-                
-                
+
     cooldown -= 0.1
     cooldown = max(cooldown, 0)
-        
-        
-        
         
     if df['Value [mg]'][i]>max_peaks:
         df['Value [mg]'][i] = df['Value [mg]'][i+4]
         df['Value [mg]'][i] = df['Value [mg]'][i+4]
-
-        
-
-
-#df['Value [mg]'][1]= df['Value [mg]'][2] =1
 
 fig, ax1 = plt.subplots()
 
@@ -225,7 +216,6 @@ ax2.tick_params(axis='y', labelcolor='r')
 # Title and grid
 plt.title('Fe2O3 Pellet redox (Absolute) - 08/07/2024')
 
-#divisor = df["t [s]"][1] - df["t [s]"][0]
 
 
 # Add shaded regions to the plot
@@ -273,57 +263,6 @@ plt.show()
 df['Value [mg]'] = df['Value [mg]']/df['Value [mg]'][0]
 df['Value [mg]'][1]= df['Value [mg]'][2] =1
 
-# fig, ax1 = plt.subplots()
-
-# # Plot the Value [mg] data
-# ax1.plot(df["t [s]"], df["Value [mg]"]*100, color='b', linestyle='-')
-# ax1.set_xlabel('Time [s]')
-# ax1.set_ylabel('Relative Mass Change (%)', color='b')
-# ax1.tick_params(axis='y', labelcolor='b')
-
-# # Create a second y-axis
-# ax2 = ax1.twinx()
-
-# # Plot the Tr [°C] data
-# ax2.plot(df["t [s]"], df["Tr [°C]"], color='r', linestyle='-')
-# ax2.set_ylabel('Cell Temperature [°C]', color='r')
-# ax2.tick_params(axis='y', labelcolor='r')
-
-# # Title and grid
-# plt.title('Fe2O3 Pellet redox (Relative (%)) - 08/07/2024')
-
-# # Add shaded regions to the plot
-# start = 0
-# for i in range(len(df_2)):
-#     index = df_2['index'][i]
-#     end = start+index
-#     gas = df_2['gas'][i]
-    
-#     if gas ==1:
-#         label, color = 'Air', 'white'
-#     elif gas ==2:
-#         label, color = 'H2 (5%)', 'green'
-#     else:
-#         if i !=len(df_2)-1:
-            
-#             label, color = 'CO2', 'grey'
-#     end = min(int(end/divisor)-1, len(df)-1)
-#     start_ = min(int(start/divisor), len(df)-1)
-    
-#     ax1.axvspan(df["t [s]"].iloc[start_], df["t [s]"].iloc[end], color=color, alpha=0.3, label=label)
-#     start += index
-
-# # Add legend for the shaded regions
-# handles, labels = ax1.get_legend_handles_labels()
-# by_label = dict(zip(labels, handles))
-# ax1.legend(by_label.values(), by_label.keys(), loc='upper left', bbox_to_anchor=(1.11, 1.05))
-
-# # Adjust layout to make room for the legend
-# plt.tight_layout(rect=[0, 0, 0.85, 1])
-
-# # Show plot
-# plt.show()
-
 fig, ax1 = plt.subplots()
 
 # Plot the Value [mg] data
@@ -363,59 +302,10 @@ for i in range(len(df_2)):
     ax1.axvspan(df["t [s]"].iloc[start_], df["t [s]"].iloc[end], color=color, alpha=0.3, label=label)
     start += index
 
-# Add legend for the shaded regions
-# handles, labels = ax1.get_legend_handles_labels()
-# by_label = dict(zip(labels, handles))
-# ax1.legend(by_label.values(), by_label.keys(), loc='upper left', bbox_to_anchor=(1.11, 1.05))
-
-# #Create a color bar for the phases
-# cmap = ListedColormap(['red','yellow'])
-# norm = BoundaryNorm([95, 95.3, 103], cmap.N)
-
-# # Create a third axis for the color bar
-# cbar_ax = fig.add_axes([0.8, 0.15, 0.01, 0.72])
-# cbar = plt.colorbar(plt.cm.ScalarMappable(cmap=cmap, norm=norm), cax=cbar_ax)
-# cbar.set_ticks([95.9, 103])
-# cbar.set_ticklabels(['Magnetite', 'Hematite'])
-# cbar.set_label('Phase')
 handles, labels = ax1.get_legend_handles_labels()
 by_label = dict(zip(labels, handles))
 ax1.legend(by_label.values(), by_label.keys(), loc='upper left', bbox_to_anchor=(1.11, 1.05))
 
-# Create an inset axis for the color bar
-# inset_ax = inset_axes(ax1,
-#                       width="5%",  # width of the inset axes in fraction of the main plot
-#                       height="50%",  # height of the inset axes in fraction of the main plot
-#                       loc='center right',
-#                       bbox_to_anchor=(0.7, -0.45, 1, 1.85),
-#                       bbox_transform=ax1.transAxes,
-#                       borderpad=0)
-
-# # Create the color bar plot
-# inset_ax.set_xlim(0, 1)
-# inset_ax.set_ylim(90, 100)
-
-# # Plotting the color bar segments
-# inset_ax.fill_between([0, 1], 90, 95.3, color='yellow')
-# inset_ax.fill_between([0, 1], 93.3, 100, color='red')
-
-# # Adding labels for the color bar
-# inset_ax.text(1.5, 90, 'Wustite + Magnetite', ha='left', va='center', color='black', fontsize=8)
-# inset_ax.text(1.5, 93.3, 'Magnetite', ha='left', va='center', color='black', fontsize=8)
-# inset_ax.text(1.5, 100, 'Hematite', ha='left', va='center', color='black', fontsize=8)
-
-# Removing x-axis ticks and labels
-# inset_ax.set_xticks([])
-# inset_ax.set_xticklabels([])
-
-# inset_ax.set_yticks([])
-# inset_ax.set_yticklabels([])
-# Setting y-axis labels
-# inset_ax.set_yticks([95, 95.6, 100])
-# inset_ax.set_yticklabels(['95', '95.6', '100'])
-
-# Adjust layout to make room for the legend and color bar
 plt.tight_layout(rect=[0, 0, 0.9, 0.95])
 
-# Show plot
 plt.show()
