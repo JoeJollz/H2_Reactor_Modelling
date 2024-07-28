@@ -113,7 +113,12 @@ for i in range(0,len(df)-1):
             t = df['t [s]'][i]
             c +=1
 
-            data_to_plot = (data_to_plot/_starting_mass-1)*100+100
+            #data_to_plot = (data_to_plot/_starting_mass-1)*100+100 # plot method 1
+            
+            
+            data_to_plot = data_to_plot/data_to_plot[0]  # plot method 2
+            data_to_plot = (1-data_to_plot)*100
+            
             # #data_to_plot = (data_to_plot-_starting_mass)/_starting_mass*100+100
             # #ax.plot(time, data_to_plot/_starting_mass*100, label=f'Curve {c}')
             ax1.plot(time, data_to_plot, label=f'Curve {c}, time {t}')
@@ -164,7 +169,9 @@ for i in range(0,len(df)-1):
         time = np.array(df['t [s]'][i:i+(2370//3)])-df['t [s]'][i]
         t = df['t [s]'][i]
         c +=1
-        data_to_plot = (data_to_plot/_starting_mass-1)*100+100
+        #data_to_plot = (data_to_plot/_starting_mass-1)*100+100 # plot method 
+        data_to_plot = data_to_plot/data_to_plot[0]  # plot method 2
+        data_to_plot = (1-data_to_plot)*100
         if i<1050:
             save = data_to_plot
             plt.plot(np.array(data_to_plot))
