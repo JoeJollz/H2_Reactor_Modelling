@@ -25,7 +25,7 @@ file_path_1 corresponds to the TGA exported data.
 file_path_2 corresponds to the gas cycles used and their periods. This is the same
 file as the .txt file for the gas inlet controller programme.
 '''
-file_path_1 = r'C:\Users\jrjol\OneDrive - University of Cambridge\Documents\Cambridge\Project\TGA DATA\Doped TGA 600 500 400 pellets\10KOH_1LFO_9FE2O3_PEL.txt'
+file_path_1 = r'C:\Users\jrjol\OneDrive - University of Cambridge\Documents\Cambridge\Project\TGA DATA\Doped TGA 600 500 400 pellets\1LFO_9Fe2o3_pel_redox.txt'
 file_path_2 = r'C:\Users\jrjol\OneDrive - University of Cambridge\Documents\Cambridge\Project\TGA DATA\Doped TGA 600 500 400 pellets\JRJ_valve.txt'
 
 # Read the file with the appropriate encoding and skip initial rows
@@ -83,7 +83,7 @@ df = df.iloc[:int(len(df) / 2), :]
 divisor = df["t [s]"][1] - df["t [s]"][0]
 plt.plot(np.arange(0,len(df_)//2),df_.iloc[:int(len(df_)/2), int(divisor)])
 plt.show()
-fig1, ax1 = plt.subplots()
+#fig1, ax1 = plt.subplots()
 
 cooldown = coolup =c = 0
 ## peak remover ## and conversion curve plotter. Here we identify and plot the reduction and oxidation curves. 
@@ -121,19 +121,19 @@ for i in range(0,len(df)-1):
             
             # #data_to_plot = (data_to_plot-_starting_mass)/_starting_mass*100+100
             # #ax.plot(time, data_to_plot/_starting_mass*100, label=f'Curve {c}')
-            ax1.plot(time, data_to_plot, label=f'Curve {c}, time {t}')
+            plt.plot(time, data_to_plot, label=f'Curve {c}, time {t}')
             
             if c == 4: 
                 temp = df['Tr [°C]'][i]
-                ax1.set_title(f'Oxidation curves at {temp} °C')
-                ax1.set_xlabel('CO$_2$ exposure time (seconds)')
-                ax1.set_ylabel('Relative Mass Change (w.r.t 100%)')
-                ax1.legend(loc='center left', bbox_to_anchor=(1, 0.5))
-                ax1.set_ylim(94, 101.1)  # Set y-axis limits here
+                plt.title(f'Oxidation curves at {temp} °C')
+                plt.xlabel('CO$_2$ exposure time (seconds)')
+                plt.ylabel('Relative Mass Change (w.r.t 100%)')
+                #ax1.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+                #plt.ylim(94, 101.1)  # Set y-axis limits here
                 #ax.set_xlim(0,500)
-                fig1.tight_layout(rect=[0, 0, 0.75, 1])  # Adjust the right side of the plot
+                plt.tight_layout(rect=[0, 0, 0.75, 1])  # Adjust the right side of the plot
                 plt.show()
-                fig1, ax1 = plt.subplots()
+               # fig1, ax1 = plt.subplots()
                 
                 c = 0   
         
@@ -180,16 +180,17 @@ for i in range(0,len(df)-1):
         data_to_plot = np.array(data_to_plot)
         #data_to_plot = (data_to_plot-_starting_mass)/_starting_mass*100+100
         #ax.plot(time, data_to_plot/_starting_mass*100, label=f'Curve {c}')
-        plt.plot(time, data_to_plot, label=f'Curve {c}, time {t}')
+        plt.plot(time, data_to_plot, label=f'Curve {c}')
         print('added to plot')
 
         if c == 4: 
             temp = df['Tr [°C]'][i]
-            plt.title(f'Reduction curves at {temp} °C')
-            plt.xlabel('H$_2$ exposure time (seconds)')
-            plt.ylabel('Relative Mass Change (w.r.t 100%)')
+            plt.title(f'10wt% KOH/1LaFeO$_3$:9Fe$_2$O$_3$ Reduction curves {temp}°C', fontsize=14)  # Adjust the title font size as needed
+            plt.xlabel('H$_2$ exposure time (seconds)', fontsize=12)  # Increase the font size for x-axis label
+            plt.ylabel('Relative Mass Change (%)', fontsize=12)  # Increase the font size for y-axis label
+            plt.tick_params(axis='both', which='major', labelsize=12)
             plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
-            #ax.set_ylim(94, 101.1)  # Set y-axis limits here
+            plt.ylim(0, 3)  # Set y-axis limits here
             #ax.set_xlim(0,500)
             plt.tight_layout(rect=[0, 0, 0.75, 1])  # Adjust the right side of the plot
             plt.show()
@@ -287,7 +288,7 @@ ax2.set_ylabel('Cell Temperature [°C]', color='r')
 ax2.tick_params(axis='y', labelcolor='r')
 
 # Title and grid
-plt.title('3wt% KOH/LaFeO$_3-$ Pellet TGA (Relative (%))')
+plt.title('1LaFeO$_3-$:9Fe$_2$O$_3$ Pellet TGA (Relative (%))')
 
 # Add shaded regions to the plot
 start = 0
