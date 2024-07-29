@@ -13,10 +13,10 @@ removed.
 '''
 
 
-max_peaks = 85.5
+max_peaks = 90
 index_start = 0 # no redox curves prior to this index.
 index_end = 89700//3 #  no redox curves beyond this point
-_starting_mass = 84.635#77.9499#84.635
+_starting_mass = 67#77.9499#84.635
 
 '''
 Step 2.
@@ -25,7 +25,7 @@ file_path_1 corresponds to the TGA exported data.
 file_path_2 corresponds to the gas cycles used and their periods. This is the same
 file as the .txt file for the gas inlet controller programme.
 '''
-file_path_1 = r'C:\Users\jrjol\OneDrive - University of Cambridge\Documents\Cambridge\Project\TGA DATA\Doped TGA 600 500 400 pellets\1LFO_9Fe2o3_pel_redox.txt'
+file_path_1 = r'C:\Users\jrjol\OneDrive - University of Cambridge\Documents\Cambridge\Project\TGA DATA\Doped TGA 600 500 400 pellets\10KOH_1LFO_9FE2O3_PEL_g.txt'
 file_path_2 = r'C:\Users\jrjol\OneDrive - University of Cambridge\Documents\Cambridge\Project\TGA DATA\Doped TGA 600 500 400 pellets\JRJ_valve.txt'
 
 # Read the file with the appropriate encoding and skip initial rows
@@ -91,7 +91,7 @@ cooldown = coolup =c = 0
 ## OXIDATION CONVERSION CURVE PLOTS ##
 for i in range(0,len(df)-1):
     #print(df['Value [mg]'][i]/df['Value [mg]'][i-1]/1.008>1)
-    if (df['Value [mg]'][i]/(df['Value [mg]'][i-1])>1.008 and 
+    if (df['Value [mg]'][i]/(df['Value [mg]'][i-1])>1.006 and 
         i > 100 and 
         cooldown == 0
         ):  # so i is the location of the drastic gas change. Gas switch located! 
@@ -129,7 +129,7 @@ for i in range(0,len(df)-1):
                 plt.xlabel('CO$_2$ exposure time (seconds)')
                 plt.ylabel('Relative Mass Change (w.r.t 100%)')
                 #ax1.legend(loc='center left', bbox_to_anchor=(1, 0.5))
-                #plt.ylim(94, 101.1)  # Set y-axis limits here
+                plt.ylim(94, 101.1)  # Set y-axis limits here
                 #ax.set_xlim(0,500)
                 plt.tight_layout(rect=[0, 0, 0.75, 1])  # Adjust the right side of the plot
                 plt.show()
@@ -185,12 +185,16 @@ for i in range(0,len(df)-1):
 
         if c == 4: 
             temp = df['Tr [°C]'][i]
-            plt.title(f'10wt% KOH/1LaFeO$_3$:9Fe$_2$O$_3$ Reduction curves {temp}°C', fontsize=14)  # Adjust the title font size as needed
-            plt.xlabel('H$_2$ exposure time (seconds)', fontsize=12)  # Increase the font size for x-axis label
+            #plt.title(f'1LaFeO$_{3-δ}$:9Fe$_2$O$_3$ Reduction curves {temp}°C', fontsize=14)  # Adjust the title font size as needed
+            title_part1 = r'LaFeO$_{3-\delta}$ Reduction Curves '
+            title_part2 = f'{temp}°C'
+            
+            plt.title(title_part1 + title_part2, fontsize=14, pad=15)
+            plt.xlabel('H$_2$ Injection Time (Seconds)', fontsize=12)  # Increase the font size for x-axis label
             plt.ylabel('Relative Mass Change (%)', fontsize=12)  # Increase the font size for y-axis label
             plt.tick_params(axis='both', which='major', labelsize=12)
-            plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
-            plt.ylim(0, 3)  # Set y-axis limits here
+            plt.legend(loc='center left', bbox_to_anchor=(1, 0.5), fontsize=12)
+            plt.ylim(0, 1.9)  # Set y-axis limits here
             #ax.set_xlim(0,500)
             plt.tight_layout(rect=[0, 0, 0.75, 1])  # Adjust the right side of the plot
             plt.show()
@@ -201,9 +205,10 @@ for i in range(0,len(df)-1):
     cooldown -= 0.1
     cooldown = max(cooldown, 0)
         
-    if df['Value [mg]'][i]>max_peaks:
-        df['Value [mg]'][i] = df['Value [mg]'][i+4]
-        df['Value [mg]'][i] = df['Value [mg]'][i+4]
+    # if df['Value [mg]'][i]>max_peaks and i<len(df)-5:
+    #     print('changes made')
+    #     df['Value [mg]'][i] = df['Value [mg]'][i-2]
+    #     df['Value [mg]'][i] = df['Value [mg]'][i-2]
 
 fig, ax1 = plt.subplots()
 
@@ -275,20 +280,22 @@ fig, ax1 = plt.subplots()
 
 # Plot the Value [mg] data
 ax1.plot(df["t [s]"], df["Value [mg]"]*100, color='b', linestyle='-')
-ax1.set_xlabel('Time [s]')
-ax1.set_ylabel('Relative Mass Change (%)', color='b')
-ax1.tick_params(axis='y', labelcolor='b')
+ax1.set_xlabel('Time [s]', fontsize=12)
+ax1.set_ylabel('Relative Mass Change (%)', color='b', fontsize=12)
+ax1.tick_params(axis='y', labelcolor='b', labelsize =12)
+ax1.tick_params(axis='x',  labelsize =12)
+ax1.set_ylim(90, 100.50)
 
 # Create a second y-axis
 ax2 = ax1.twinx()
 
 # Plot the Tr [°C] data
 ax2.plot(df["t [s]"], df["Tr [°C]"], color='r', linestyle='-')
-ax2.set_ylabel('Cell Temperature [°C]', color='r')
-ax2.tick_params(axis='y', labelcolor='r')
+ax2.set_ylabel('Cell Temperature [°C]', color='r', fontsize=12)
+ax2.tick_params(axis='y', labelcolor='r', labelsize =12)
 
 # Title and grid
-plt.title('1LaFeO$_3-$:9Fe$_2$O$_3$ Pellet TGA (Relative (%))')
+plt.title('10wt% KOH/1LaFeO$_{3-δ}$:9Fe$_2$O$_3$ Pellet TGA (Relative Mass (%))')
 
 # Add shaded regions to the plot
 start = 0
@@ -300,10 +307,10 @@ for i in range(len(df_2)):
     if gas == 1:
         label, color = 'Air', 'white'
     elif gas == 2:
-        label, color = 'H2 (5%)', 'green'
+        label, color = 'H$_2$ (5%)', 'green'
     else:
         if i != len(df_2) - 1:
-            label, color = 'CO2', 'grey'
+            label, color = 'CO$_2$', 'grey'
     end = min(int(end / divisor) - 1, len(df) - 1)
     start_ = min(int(start / divisor), len(df) - 1)
     
@@ -312,8 +319,9 @@ for i in range(len(df_2)):
 
 handles, labels = ax1.get_legend_handles_labels()
 by_label = dict(zip(labels, handles))
-ax1.legend(by_label.values(), by_label.keys(), loc='upper left', bbox_to_anchor=(1.11, 1.05))
+ax1.legend(by_label.values(), by_label.keys(), loc='upper left', bbox_to_anchor=(1.01, 0.1), fontsize=12)
 
 plt.tight_layout(rect=[0, 0, 0.9, 0.95])
+
 
 plt.show()
