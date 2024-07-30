@@ -25,7 +25,7 @@ file_path_1 corresponds to the TGA exported data.
 file_path_2 corresponds to the gas cycles used and their periods. This is the same
 file as the .txt file for the gas inlet controller programme.
 '''
-file_path_1 = r'C:\Users\jrjol\OneDrive - University of Cambridge\Documents\Cambridge\Project\TGA DATA\Doped TGA 600 500 400 pellets\10KOH_1LFO_9FE2O3_PEL_g.txt'
+file_path_1 = r'C:\Users\jrjol\OneDrive - University of Cambridge\Documents\Cambridge\Project\TGA DATA\Doped TGA 600 500 400 pellets\Fe2O3_pel_red_300_400_500_600.txt'
 file_path_2 = r'C:\Users\jrjol\OneDrive - University of Cambridge\Documents\Cambridge\Project\TGA DATA\Doped TGA 600 500 400 pellets\JRJ_valve.txt'
 
 # Read the file with the appropriate encoding and skip initial rows
@@ -153,6 +153,8 @@ for i in range(0,len(df)-1):
 c=0
 cooldown = 0
 
+conversions = {} # storing the conversions for the final reduction curve, for each isotherm. 
+
 for i in range(0,len(df)-1):
     if df['Value [mg]'][i]>1500:
         print('bingo')
@@ -186,29 +188,43 @@ for i in range(0,len(df)-1):
         if c == 4: 
             temp = df['Tr [°C]'][i]
             #plt.title(f'1LaFeO$_{3-δ}$:9Fe$_2$O$_3$ Reduction curves {temp}°C', fontsize=14)  # Adjust the title font size as needed
-            title_part1 = r'LaFeO$_{3-\delta}$ Reduction Curves '
-            title_part2 = f'{temp}°C'
+           # title_part1 = r'10wt% KOH/1LaFeO$_{3-\delta}$:9Fe$_2$O$_3$\nReduction Curves'
+            #title_part2 = f'{temp}°C'
+            #plt.title(title_part1 + title_part2, fontsize=14, pad=15)
+            # title_part1 = r'10wt% KOH/1LaFeO$_{3-\delta}$:9Fe$_2$O$_3$'
+            # title_part2 = 'Reduction Curves\n' + f'{temp}°C'
             
-            plt.title(title_part1 + title_part2, fontsize=14, pad=15)
+            # # Combine title parts and set the title
+            # plt.title(title_part1 + '\n' + title_part2, fontsize=14, pad=15)
+            
+            title_part1 = r'LaFeO$_{3-\delta}$'
+            title_part2 = f'Reduction Curves {temp}°C'
+            
+            # Combine title parts and set the title
+            plt.title(title_part1 + '\n' + title_part2, fontsize=12, pad=15)
+            
             plt.xlabel('H$_2$ Injection Time (Seconds)', fontsize=12)  # Increase the font size for x-axis label
             plt.ylabel('Relative Mass Change (%)', fontsize=12)  # Increase the font size for y-axis label
             plt.tick_params(axis='both', which='major', labelsize=12)
             plt.legend(loc='center left', bbox_to_anchor=(1, 0.5), fontsize=12)
-            plt.ylim(0, 1.9)  # Set y-axis limits here
+            plt.ylim(0, 2)  # Set y-axis limits here
             #ax.set_xlim(0,500)
             plt.tight_layout(rect=[0, 0, 0.75, 1])  # Adjust the right side of the plot
             plt.show()
             #fig2, ax2 = plt.subplots()
+            
+            conversions[int(temp)] = data_to_plot
             
             c = 0
 
     cooldown -= 0.1
     cooldown = max(cooldown, 0)
         
-    # if df['Value [mg]'][i]>max_peaks and i<len(df)-5:
-    #     print('changes made')
-    #     df['Value [mg]'][i] = df['Value [mg]'][i-2]
-    #     df['Value [mg]'][i] = df['Value [mg]'][i-2]
+# key info for kinetic modelling.    
+time_steps = len(conversions[300])
+time = np.linspace(0, time_steps*3, time_steps+1)
+temperatures = list(conversions.keys())
+
 
 fig, ax1 = plt.subplots()
 
@@ -284,7 +300,7 @@ ax1.set_xlabel('Time [s]', fontsize=12)
 ax1.set_ylabel('Relative Mass Change (%)', color='b', fontsize=12)
 ax1.tick_params(axis='y', labelcolor='b', labelsize =12)
 ax1.tick_params(axis='x',  labelsize =12)
-ax1.set_ylim(90, 100.50)
+ax1.set_ylim(97.3, 100.50)
 
 # Create a second y-axis
 ax2 = ax1.twinx()
@@ -295,7 +311,7 @@ ax2.set_ylabel('Cell Temperature [°C]', color='r', fontsize=12)
 ax2.tick_params(axis='y', labelcolor='r', labelsize =12)
 
 # Title and grid
-plt.title('10wt% KOH/1LaFeO$_{3-δ}$:9Fe$_2$O$_3$ Pellet TGA (Relative Mass (%))')
+plt.title('10wt% KOH/LaFeO$_{3-δ}$ Pellet TGA (Relative Mass (%))')
 
 # Add shaded regions to the plot
 start = 0
