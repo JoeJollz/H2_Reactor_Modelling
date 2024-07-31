@@ -18,7 +18,7 @@ max_peaks = 90
 index_start = 0 # no redox curves prior to this index.
 index_end = 89700//3 #  no redox curves beyond this point
 _starting_mass = 67#77.9499#84.635
-
+target_conversions = np.linspace(0.0001, 1.5/100, 100)
 '''
 Step 2.
 Correctly select your data file paths. 
@@ -82,7 +82,6 @@ def first_order_kinetics(t, k):
 def second_order_kinetics(t, k):
     return k * t / (1 + k * t)
 
-target_conversions = np.linspace(0.0001, 0.4, 100)  # Example target conversions
 
 def find_time_for_conversion(conversion_data, time_data, target):
     for i, conversion in enumerate(conversion_data):
@@ -374,6 +373,12 @@ by_label = dict(zip(labels, handles))
 ax1.legend(by_label.values(), by_label.keys(), loc='upper left', bbox_to_anchor=(1.01, 0.1), fontsize=12)
 
 plt.tight_layout(rect=[0, 0, 0.9, 0.95])
+
+
+
+times_for_target_conversions = get_times_for_target_conversions(conversions, time, target_conversions)
+
+
 
 
 plt.show()
