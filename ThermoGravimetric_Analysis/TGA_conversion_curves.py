@@ -82,6 +82,24 @@ def first_order_kinetics(t, k):
 def second_order_kinetics(t, k):
     return k * t / (1 + k * t)
 
+target_conversions = np.linspace(0.0001, 0.4, 100)  # Example target conversions
+
+def find_time_for_conversion(conversion_data, time_data, target):
+    for i, conversion in enumerate(conversion_data):
+        if conversion >= target:
+            return time_data[i]
+    return None  # Return None if the target conversion is not reached
+
+def get_times_for_target_conversions(conversions, time, target_conversions):
+    times_for_conversions = {temp: [] for temp in conversions}
+
+    for temp, conversion_data in conversions.items():
+        for target in target_conversions:
+            time_for_conversion = find_time_for_conversion(conversion_data, time, target)
+            times_for_conversions[temp].append(time_for_conversion)
+    
+    return times_for_conversions
+
 
 
 # Ensure all data is numeric and handle missing values if any
