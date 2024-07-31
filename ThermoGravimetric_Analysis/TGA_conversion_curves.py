@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap, BoundaryNorm
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
+from scipy.optimize import curve_fit
 
 '''
 Step 1 for this code. 
@@ -73,6 +74,15 @@ def is_within_ranges(time, start_times, end_times):
             return True
     #print('bounyancy check accept at t: ', time)
     return False
+
+
+def first_order_kinetics(t, k):
+    return 1 - np.exp(-k * t)
+
+def second_order_kinetics(t, k):
+    return k * t / (1 + k * t)
+
+
 
 # Ensure all data is numeric and handle missing values if any
 df = df.apply(pd.to_numeric, errors='coerce').dropna()
@@ -154,6 +164,11 @@ c=0
 cooldown = 0
 
 conversions = {} # storing the conversions for the final reduction curve, for each isotherm. 
+rate_constants_first_order = {}
+rate_constants_second_order = {}
+r_squared_first_order = {}
+r_squared_second_order = {}
+
 
 for i in range(0,len(df)-1):
     if df['Value [mg]'][i]>1500:
@@ -213,7 +228,9 @@ for i in range(0,len(df)-1):
             plt.show()
             #fig2, ax2 = plt.subplots()
             
-            conversions[int(temp)] = data_to_plot
+            data_to_plot = np.append(data_to_plot, data_to_plot[-1])
+            
+            conversions[int(temp)] = data_to_plot/100
             
             c = 0
 
@@ -223,6 +240,7 @@ for i in range(0,len(df)-1):
 # key info for kinetic modelling.    
 time_steps = len(conversions[300])
 time = np.linspace(0, time_steps*3, time_steps+1)
+time = time[:-1]
 temperatures = list(conversions.keys())
 
 
@@ -340,4 +358,78 @@ ax1.legend(by_label.values(), by_label.keys(), loc='upper left', bbox_to_anchor=
 plt.tight_layout(rect=[0, 0, 0.9, 0.95])
 
 
+plt.show()
+
+for temp in conversions:
+    conversion = conversions[temp]
+    popt_first, _ = curve_fit(first_order_kinetics, time, conversion)
+    rate_constants_first_order[temp] = popt_first[0]
+
+    popt_second, _ = curve_fit(second_order_kinetics, time, conversion)
+    rate_constants_second_order[temp] = popt_second[0]
+
+    # Calculate predicted values
+    predicted_first_order = first_order_kinetics(time, rate_constants_first_order[temp])
+    predicted_second_order = second_order_kinetics(time, rate_constants_second_order[temp])
+
+    # Calculate R² for first-order kinetics
+    ss_res_first = np.sum((conversion - predicted_first_order) ** 2)
+    ss_tot_first = np.sum((conversion - np.mean(conversion)) ** 2)
+    r_squared_first_order[temp] = 1 - (ss_res_first / ss_tot_first)
+
+    # Calculate R² for second-order kinetics
+    ss_res_second = np.sum((conversion - predicted_second_order) ** 2)
+    ss_tot_second = np.sum((conversion - np.mean(conversion)) ** 2)
+    r_squared_second_order[temp] = 1 - (ss_res_second / ss_tot_second)
+
+# Print rate constants and R² values
+print("First-Order Rate Constants:", rate_constants_first_order)
+print("First-Order R² Values:", r_squared_first_order)
+print("Second-Order Rate Constants:", rate_constants_second_order)
+print("Second-Order R² Values:", r_squared_second_order)
+
+# Print rate constants
+print("First-Order Rate Constants:", rate_constants_first_order)
+print("Second-Order Rate Constants:", rate_constants_second_order)
+
+# Plot the fits for each model
+for temp in temperatures:
+    conversion = conversions[temp]
+    plt.plot(time, conversion, 'o', label=f'Experimental Data {temp}°C')
+    plt.plot(time, first_order_kinetics(time, rate_constants_first_order[temp]), '-', label=f'First-Order Fit {temp}°C')
+    plt.plot(time, second_order_kinetics(time, rate_constants_second_order[temp]), '--', label=f'Second-Order Fit {temp}°C')
+plt.xlabel('Time (s)')
+plt.ylabel('Conversion')
+plt.legend()
+plt.show()
+
+
+import matplotlib.pyplot as plt
+
+temperatures = np.array(list(rate_constants_first_order.keys())) + 273.15  # Convert to Kelvin
+k_values = np.array(list(rate_constants_first_order.values()))
+
+# Take the natural logarithm of the rate constants
+ln_k = np.log(k_values)
+
+# Calculate the reciprocal of the temperatures
+inv_T = 1 / temperatures
+
+# Perform a linear fit to the Arrhenius plot
+slope, intercept = np.polyfit(inv_T, ln_k, 1)
+
+# Calculate activation energy and pre-exponential factor
+R = 8.314  # J/(mol*K), universal gas constant
+E_a = -slope * R
+A = np.exp(intercept)
+
+print(f"Activation Energy (E_a): {E_a} J/mol")
+print(f"Pre-exponential Factor (A): {A}")
+
+# Plot the Arrhenius plot
+plt.plot(inv_T, ln_k, 'o', label='Data')
+plt.plot(inv_T, slope * inv_T + intercept, '-', label='Fit')
+plt.xlabel('1/T (1/K)')
+plt.ylabel('ln(k)')
+plt.legend()
 plt.show()
