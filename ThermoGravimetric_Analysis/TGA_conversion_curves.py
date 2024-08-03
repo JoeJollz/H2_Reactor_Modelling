@@ -13,6 +13,9 @@ Step 1 for this code.
 The peaks in the TGA can be removed, ensure the variable 
 'max_peaks' is less than the value of the anomoly peaks which you would like
 removed.
+
+target convserion upper value must be selected based on the fact that 2 iso-mass times can be 
+calculated for 500 deg C and 600 deg C.
 '''
 
 
@@ -21,7 +24,7 @@ index_start = 0  # no redox curves prior to this index.
 index_end = 89700//3  # no redox curves beyond this point
 _starting_mass = 67  # 77.9499#84.635
 # upper target conversions must be reasonably picked, 0.8*conversion_max_600degC
-target_conversions = np.linspace(0.0001, 1/100, 100)
+target_conversions = np.linspace(0.0001, 0.78/100, 100)
 
 
 
@@ -90,12 +93,20 @@ def is_within_ranges(time, start_times, end_times):
     return False
 
 
+
+## ODE solved kinetic models ###
 def first_order_kinetics(t, k):
     return 1 - np.exp(-k * t)
 
 
+# def second_order_kinetics(t, k):
+#     return k * t / (1 + k * t)
+
+# def second_order_kinetics(t, k, C):
+#     return (k * C * t) / (1 + k * C * t)
+
 def second_order_kinetics(t, k):
-    return k * t / (1 + k * t)
+    return (k  * t) / ( k * t-1)
 
 
 def find_time_for_conversion(conversion_data, time_data, target, line):
@@ -104,8 +115,8 @@ def find_time_for_conversion(conversion_data, time_data, target, line):
             return time_data[i]
         # else: # in the experimental data, the conversion never reached the target conversion within the 2370 sec experiment. use an extrapolation method for that curve to extract a rought time of conversion.
             #target_time = interp_function(0.00024)
-    target_time = line(target)
-    return target_time
+    #target_time = line(target)
+    return None
     # return None  # Return None if the target conversion is not reached
 
 
@@ -277,7 +288,7 @@ for i in range(0, len(df)-1):
             plt.ylabel('Relative Mass Change (%)', fontsize=12)
             plt.tick_params(axis='both', which='major', labelsize=12)
             plt.legend(loc='center left', bbox_to_anchor=(1, 0.5), fontsize=12)
-            plt.ylim(0, 2)  # Set y-axis limits here
+           # plt.ylim(0, 2)  # Set y-axis limits here
             # ax.set_xlim(0,500)
             # Adjust the right side of the plot
             plt.tight_layout(rect=[0, 0, 0.75, 1])
@@ -424,9 +435,10 @@ times_for_target_conversions = get_times_for_target_conversions(
 
 plt.show()
 
+
+## FITTING THE VARIOUS KINETIC MODELS ###
 for temp in conversions:
     conversion = conversions[temp]
-    
     
     ### FIRST ORDER KINETICS MODEL ###
     popt_first, _ = curve_fit(first_order_kinetics, time, conversion)
