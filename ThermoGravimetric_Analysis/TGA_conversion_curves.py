@@ -30,10 +30,6 @@ target_conversions = np.linspace(0.0001, 0.76/100, 100)
 
 
 
-## using the 0-1 range conversion 
-#target_conversions =np.linspace(0.0001, 1)
-
-
 
 
 '''
@@ -100,13 +96,6 @@ def is_within_ranges(time, start_times, end_times):
 def first_order_kinetics(t, k):
     return 1 - np.exp(-k * t)
 
-
-# def second_order_kinetics(t, k):
-#     return k * t / (1 + k * t)
-
-# def second_order_kinetics(t, k, C):
-#     return (k * C * t) / (1 + k * C * t)
-
 def second_order_kinetics(t, k):
     return (k  * t) / ( k * t-1)
 
@@ -115,9 +104,7 @@ def find_time_for_conversion(conversion_data, time_data, target, line):
     for i, conversion in enumerate(conversion_data):
         if conversion >= target:
             return time_data[i]
-        # else: # in the experimental data, the conversion never reached the target conversion within the 2370 sec experiment. use an extrapolation method for that curve to extract a rought time of conversion.
-            #target_time = interp_function(0.00024)
-    #target_time = line(target)
+
     return None
     # return None  # Return None if the target conversion is not reached
 
@@ -261,22 +248,11 @@ for i in range(0, len(df)-1):
             plt.title(f'{t}')
             plt.show()
         data_to_plot = np.array(data_to_plot)
-        #data_to_plot = (data_to_plot-_starting_mass)/_starting_mass*100+100
-        #ax.plot(time, data_to_plot/_starting_mass*100, label=f'Curve {c}')
         plt.plot(time, data_to_plot, label=f'Curve {c}')
         print('added to plot')
         #d_t_p = (data_to_plot)/()
         if c == 4:
             temp = df['Tr [°C]'][i]
-            # plt.title(f'1LaFeO$_{3-δ}$:9Fe$_2$O$_3$ Reduction curves {temp}°C', fontsize=14)  # Adjust the title font size as needed
-           # title_part1 = r'10wt% KOH/1LaFeO$_{3-\delta}$:9Fe$_2$O$_3$\nReduction Curves'
-            #title_part2 = f'{temp}°C'
-            #plt.title(title_part1 + title_part2, fontsize=14, pad=15)
-            # title_part1 = r'10wt% KOH/1LaFeO$_{3-\delta}$:9Fe$_2$O$_3$'
-            # title_part2 = 'Reduction Curves\n' + f'{temp}°C'
-
-            # # Combine title parts and set the title
-            # plt.title(title_part1 + '\n' + title_part2, fontsize=14, pad=15)
 
             title_part1 = r'LaFeO$_{3-\delta}$'
             title_part2 = f'Reduction Curves {temp}°C'
@@ -528,61 +504,38 @@ plt.ylabel('ln(k)')
 plt.legend()
 plt.show()
 
-Act_energies = []
-#temps = 1/temperatures
-#temps = np.array([1/(300+273.15),1/(400+273.15),1/(500+273.15), 1/(600+273.15)])
-temps = np.array([1/(500+273.15), 1/(600+273.15)])
-
+Act_energies = [] # list to store the activation energies for each relative mass loss.
 for i in range(len(target_conversions)):
     temp_store_times = []
-    
-    # if times_for_target_conversions[300][i] is not None:
-    #     temps = np.array([1/(300+273.15),1/(400+273.15),1/(500+273.15), \
-    #                       1/(600+273.15)])
-    #     temp_store_times.append(times_for_target_conversions[300][i])
-    #     temp_store_times.append(times_for_target_conversions[400][i])
-    #     temp_store_times.append(times_for_target_conversions[500][i])
-    #     temp_store_times.append(times_for_target_conversions[600][i])
+
     if (times_for_target_conversions[300][i] is None and 
           times_for_target_conversions[400][i] is not None):
         temps = np.array([1/(400+273.15),1/(500+273.15), 1/(600+273.15)])
         temp_store_times.append(times_for_target_conversions[400][i])
         temp_store_times.append(times_for_target_conversions[500][i])
         temp_store_times.append(times_for_target_conversions[600][i])
-    # elif (times_for_target_conversions[300][i] is None and 
-    #       times_for_target_conversions[400][i] is None and
-    #       times_for_target_conversions[500][i] is not None):
     else:
         temps = np.array([1/(500+273.15), 1/(600+273.15)])
         temp_store_times.append(times_for_target_conversions[500][i])
         temp_store_times.append(times_for_target_conversions[600][i])
         
+    temp_store_times = np.log(temp_store_times)
     
-    
-    #temp_store_times.append(times_for_target_conversions[300][i])
-    #temp_store_times.append(times_for_target_conversions[400][i])
-    # temp_store_times.append(times_for_target_conversions[500][i])
-    # temp_store_times.append(times_for_target_conversions[600][i])
-
     slope, y_intercept = np.polyfit(temps, temp_store_times, 1)
+
     predicted_values = slope * temps + y_intercept
 
     # Compute residuals
     residuals = temp_store_times - predicted_values
 
-    # Compute R-squared
     ss_total = np.sum((temp_store_times - np.mean(temp_store_times))**2)
     ss_residual = np.sum(residuals**2)
     r_squared = 1 - (ss_residual / ss_total)
-    E = slope * 8.3144/1000
+    E = slope * 8.3144/1000 # calculating the activation energy from the slope.
     Act_energies.append(E)
-    plt.plot(temps, temp_store_times)
-    plt.title(f'Conversion: {target_conversions[i]}. R^2 = {r_squared}')
-    plt.xlabel('1/T (1/K)')
-    plt.ylabel('ln(t$_a$)')
-    plt.show()
 
-plt.plot(target_conversions, Act_energies)
-plt.xlabel('Conversion')
-plt.ylabel('Activation energy (kJ/mol)')
+plt.plot(target_conversions*100, Act_energies)
+plt.xlabel('Relative Mass Loss (%)')
+plt.ylabel('Activation Energy (kJ/mol)')
+plt.title('Activation Energy (kJ/mol) vs Relative Mass Loss - 1LaFeO$_3$:9Fe$_2$O$_3$')
 plt.show()
