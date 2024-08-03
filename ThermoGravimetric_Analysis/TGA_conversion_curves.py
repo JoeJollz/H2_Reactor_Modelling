@@ -15,7 +15,9 @@ The peaks in the TGA can be removed, ensure the variable
 removed.
 
 target convserion upper value must be selected based on the fact that 2 iso-mass times can be 
-calculated for 500 deg C and 600 deg C.
+calculated for 500 deg C and 600 deg C. To ensure 2 data points exist, check the 'times_for_target_conversions'
+and the 500 and 600 keys, there should be nuerical values for all 100 elements in each lists, with no 'None' present.
+If so, deacrease the target conversions. 
 '''
 
 
@@ -24,7 +26,7 @@ index_start = 0  # no redox curves prior to this index.
 index_end = 89700//3  # no redox curves beyond this point
 _starting_mass = 67  # 77.9499#84.635
 # upper target conversions must be reasonably picked, 0.8*conversion_max_600degC
-target_conversions = np.linspace(0.0001, 0.78/100, 100)
+target_conversions = np.linspace(0.0001, 0.76/100, 100)
 
 
 
