@@ -530,14 +530,39 @@ plt.show()
 
 Act_energies = []
 #temps = 1/temperatures
-temps = np.array([1/(400+273.15),1/(500+273.15), 1/(600+273.15)])
+#temps = np.array([1/(300+273.15),1/(400+273.15),1/(500+273.15), 1/(600+273.15)])
+temps = np.array([1/(500+273.15), 1/(600+273.15)])
 
 for i in range(len(target_conversions)):
     temp_store_times = []
+    
+    # if times_for_target_conversions[300][i] is not None:
+    #     temps = np.array([1/(300+273.15),1/(400+273.15),1/(500+273.15), \
+    #                       1/(600+273.15)])
+    #     temp_store_times.append(times_for_target_conversions[300][i])
+    #     temp_store_times.append(times_for_target_conversions[400][i])
+    #     temp_store_times.append(times_for_target_conversions[500][i])
+    #     temp_store_times.append(times_for_target_conversions[600][i])
+    if (times_for_target_conversions[300][i] is None and 
+          times_for_target_conversions[400][i] is not None):
+        temps = np.array([1/(400+273.15),1/(500+273.15), 1/(600+273.15)])
+        temp_store_times.append(times_for_target_conversions[400][i])
+        temp_store_times.append(times_for_target_conversions[500][i])
+        temp_store_times.append(times_for_target_conversions[600][i])
+    # elif (times_for_target_conversions[300][i] is None and 
+    #       times_for_target_conversions[400][i] is None and
+    #       times_for_target_conversions[500][i] is not None):
+    else:
+        temps = np.array([1/(500+273.15), 1/(600+273.15)])
+        temp_store_times.append(times_for_target_conversions[500][i])
+        temp_store_times.append(times_for_target_conversions[600][i])
+        
+    
+    
     #temp_store_times.append(times_for_target_conversions[300][i])
-    temp_store_times.append(times_for_target_conversions[400][i])
-    temp_store_times.append(times_for_target_conversions[500][i])
-    temp_store_times.append(times_for_target_conversions[600][i])
+    #temp_store_times.append(times_for_target_conversions[400][i])
+    # temp_store_times.append(times_for_target_conversions[500][i])
+    # temp_store_times.append(times_for_target_conversions[600][i])
 
     slope, y_intercept = np.polyfit(temps, temp_store_times, 1)
     predicted_values = slope * temps + y_intercept
@@ -551,11 +576,11 @@ for i in range(len(target_conversions)):
     r_squared = 1 - (ss_residual / ss_total)
     E = slope * 8.3144/1000
     Act_energies.append(E)
-    # plt.plot(temps, temp_store_times)
-    # plt.title(f'Conversion: {target_conversions[i]}. R^2 = {r_squared}')
-    # plt.xlabel('1/T (1/K)')
-    # plt.ylabel('ln(t$_a$)')
-    # plt.show()
+    plt.plot(temps, temp_store_times)
+    plt.title(f'Conversion: {target_conversions[i]}. R^2 = {r_squared}')
+    plt.xlabel('1/T (1/K)')
+    plt.ylabel('ln(t$_a$)')
+    plt.show()
 
 plt.plot(target_conversions, Act_energies)
 plt.xlabel('Conversion')
