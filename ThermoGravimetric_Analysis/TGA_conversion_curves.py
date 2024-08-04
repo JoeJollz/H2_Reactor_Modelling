@@ -39,7 +39,7 @@ file_path_1 corresponds to the TGA exported data.
 file_path_2 corresponds to the gas cycles used and their periods. This is the same
 file as the .txt file for the gas inlet controller programme.
 '''
-file_path_1 = r'C:\Users\jrjol\OneDrive - University of Cambridge\Documents\Cambridge\Project\TGA DATA\LargePels\LFO_pellet_redox_300_400_500_600_g.txt'
+file_path_1 = r'C:\Users\jrjol\OneDrive - University of Cambridge\Documents\Cambridge\Project\TGA DATA\Doped TGA 600 500 400 pellets\1LFO_9Fe2o3_pel_redox_g.txt'
 file_path_2 = r'C:\Users\jrjol\OneDrive - University of Cambridge\Documents\Cambridge\Project\TGA DATA\Doped TGA 600 500 400 pellets\JRJ_valve.txt'
 
 # Read the file with the appropriate encoding and skip initial rows
@@ -250,13 +250,13 @@ for i in range(0, len(df)-1):
             plt.title(f'{t}')
             plt.show()
         data_to_plot = np.array(data_to_plot)
-        plt.plot(time, data_to_plot, label=f'Curve {c}')
+        plt.plot(time, data_to_plot, label=f'Cycle {c}')
         print('added to plot')
         #d_t_p = (data_to_plot)/()
         if c == 4:
-            temp = df['Tr [°C]'][i]
+            temp = int(df['Tr [°C]'][i])
 
-            title_part1 = r'LaFeO$_{3-\delta}$'
+            title_part1 = r'1LaFeO$_{3-δ}$:9Fe$_2$O$_3$'
             title_part2 = f'Reduction Curves {temp}°C'
 
             # Combine title parts and set the title
@@ -268,7 +268,7 @@ for i in range(0, len(df)-1):
             plt.ylabel('Relative Mass Change (%)', fontsize=12)
             plt.tick_params(axis='both', which='major', labelsize=12)
             plt.legend(loc='center left', bbox_to_anchor=(1, 0.5), fontsize=12)
-           # plt.ylim(0, 2)  # Set y-axis limits here
+            plt.ylim(0, 5)  # Set y-axis limits here
             # ax.set_xlim(0,500)
             # Adjust the right side of the plot
             plt.tight_layout(rect=[0, 0, 0.75, 1])
@@ -276,7 +276,7 @@ for i in range(0, len(df)-1):
             #fig2, ax2 = plt.subplots()
             if temp == 500:
                targ = data_to_plot[-1]
-               target_conversions = np.linspace(0.0001, targ/100, 200)
+               target_conversions = np.linspace(0.0001, targ/100, 100)
 
             data_to_plot = np.append(data_to_plot, data_to_plot[-1])
 
@@ -412,6 +412,11 @@ ax1.legend(by_label.values(), by_label.keys(), loc='upper left',
 plt.tight_layout(rect=[0, 0, 0.9, 0.95])
 
 
+# manip 
+
+# conversions[500][:4] = np.linspace(0, conversions[500][4],4)
+# conversions[600][:4] = np.linspace(0, conversions[600][3],4)
+
 times_for_target_conversions = get_times_for_target_conversions(
     conversions, time, target_conversions)
 
@@ -509,6 +514,10 @@ plt.ylabel('ln(k)')
 plt.legend()
 plt.show()
 
+
+
+
+
 Act_energies = [] # list to store the activation energies for each relative mass loss.
 for i in range(len(target_conversions)):
     temp_store_times = []
@@ -539,9 +548,31 @@ for i in range(len(target_conversions)):
     r_squared = 1 - (ss_residual / ss_total)
     E = slope * 8.3144/1000 # calculating the activation energy from the slope.
     Act_energies.append(E)
+    
+    
+# Act_energies[0]=0
+# Act_energies[1] = (Act_energies[2])/2
+
+#Act_energies[:3] = np.linspace(0, Act_energies[3], 3)
+
+KLFconversions = target_conversions
+Act_energies_KLF = Act_energies
 
 plt.plot(target_conversions*100, Act_energies)
-plt.xlabel('Relative Mass Loss (%)')
-plt.ylabel('Activation Energy (kJ/mol)')
-plt.title('Activation Energy (kJ/mol) vs Relative Mass Loss - 1LaFeO$_3$:9Fe$_2$O$_3$')
+plt.xlabel('Relative Mass Loss (%)', fontsize=12)
+plt.ylabel('Activation Energy (kJ/mol)', fontsize=12)
+plt.title('Activation Energy (kJ/mol) vs Relative Mass Loss - LaFeO$_{3-δ}$', fontsize=12)
+plt.tick_params(axis='both', which='major', labelsize=12)
+plt.ylim(0,140)
+plt.xlim(0, 0.85)
 plt.show()
+
+## manual plot to compare the 2 activation energies of 2 correponding oxygen carrier results ##
+# plt.plot(LFOconversions*100, Act_energies_LFO, label='LaFeO$_{3-δ}$')
+# plt.plot(KOHLFOconversions*100, Act_energies_KOHLFO, label= '10wt% KOH/LaFeO$_{3-δ}$')
+# plt.xlabel('Relative Mass Loss (%)', fontsize =12)
+# plt.ylabel('Activation Energy (kJ/mol)', fontsize = 12)
+# plt.title('Activation Energy vs Relative Mass Loss (%)', fontsize=12)
+# plt.tick_params(axis='both', which='major', labelsize=12)
+# plt.legend(fontsize=12)
+# plt.show()
