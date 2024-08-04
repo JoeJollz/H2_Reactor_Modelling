@@ -7,6 +7,7 @@ from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 from scipy.optimize import curve_fit
 from scipy.interpolate import interp1d
 from sklearn.metrics import r2_score
+from matplotlib.ticker import MaxNLocator
 
 '''
 Step 1 for this code. 
@@ -39,8 +40,10 @@ file_path_1 corresponds to the TGA exported data.
 file_path_2 corresponds to the gas cycles used and their periods. This is the same
 file as the .txt file for the gas inlet controller programme.
 '''
-file_path_1 = r'C:\Users\jrjol\OneDrive - University of Cambridge\Documents\Cambridge\Project\TGA DATA\Doped TGA 600 500 400 pellets\1LFO_9Fe2o3_pel_redox_g.txt'
+file_path_1 = r'C:\Users\jrjol\OneDrive - University of Cambridge\Documents\Cambridge\Project\TGA DATA\Doped TGA 600 500 400 pellets\LFO_pellet_redox_300_400_500_600_g.txt'
 file_path_2 = r'C:\Users\jrjol\OneDrive - University of Cambridge\Documents\Cambridge\Project\TGA DATA\Doped TGA 600 500 400 pellets\JRJ_valve.txt'
+file_path_3 = r'C:\Users\jrjol\OneDrive - University of Cambridge\Documents\Cambridge\Project\TGA DATA\Doped TGA 600 500 400 pellets\KOH_LFO_pellet_redox_300_400_500_600_1_g.txt'
+
 
 # Read the file with the appropriate encoding and skip initial rows
 df = df_ = pd.read_csv(
@@ -162,7 +165,7 @@ for i in range(0, len(df)-1):
         df['Value [mg]'][i+3] = df['Value [mg]'][i] = df['Value [mg]'][i-2]
         cooldown = 1
         # check if reduction curve, or oxidation curve!
-        print(df['t [s]'][i], df['Value [mg]'][i], df['Value [mg]'][i+50])
+      #  print(df['t [s]'][i], df['Value [mg]'][i], df['Value [mg]'][i+50])
         if (df['Value [mg]'][i] < df['Value [mg]'][i+5] and
             i > index_start and
             i < index_end and
@@ -183,28 +186,28 @@ for i in range(0, len(df)-1):
             # #ax.plot(time, data_to_plot/_starting_mass*100, label=f'Curve {c}')
             plt.plot(time, data_to_plot, label=f'Curve {c}, time {t}')
 
-            if c == 4:
-                temp = df['Tr [°C]'][i]
-                plt.title(f'Oxidation curves at {temp} °C')
-                plt.xlabel('CO$_2$ exposure time (seconds)')
-                plt.ylabel('Relative Mass Change (w.r.t 100%)')
-                #ax1.legend(loc='center left', bbox_to_anchor=(1, 0.5))
-                plt.ylim(94, 101.1)  # Set y-axis limits here
-                # ax.set_xlim(0,500)
-                # Adjust the right side of the plot
-                plt.tight_layout(rect=[0, 0, 0.75, 1])
-                plt.show()
-               # fig1, ax1 = plt.subplots()
-                # if temp == 500:
-                #    targ = data_to_plot[-1]/100
-                #    target_conversions = np.linspace(0.0001, targ/100, 100)
-                c = 0
+            # if c == 4:
+            #     temp = df['Tr [°C]'][i]
+            #     plt.title(f'Oxidation curves at {temp} °C')
+            #     plt.xlabel('CO$_2$ exposure time (seconds)')
+            #     plt.ylabel('Relative Mass Change (w.r.t 100%)')
+            #     #ax1.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+            #     plt.ylim(94, 101.1)  # Set y-axis limits here
+            #     # ax.set_xlim(0,500)
+            #     # Adjust the right side of the plot
+            #     plt.tight_layout(rect=[0, 0, 0.75, 1])
+            #     plt.show()
+            #    # fig1, ax1 = plt.subplots()
+            #     # if temp == 500:
+            #     #    targ = data_to_plot[-1]/100
+            #     #    target_conversions = np.linspace(0.0001, targ/100, 100)
+            #     c = 0
 
         if (is_within_ranges(df['t [s]'][i+1], h2_start, h2_end)
             ): # reduction taking place
             df['Value [mg]'][i] = 2000
             t = df['t [s]'][i]
-            print(df['Value [mg]'][i], f'time: {t}')
+            #print(df['Value [mg]'][i], f'time: {t}')
 
     cooldown -= 0.1
     cooldown = max(cooldown, 0)
@@ -223,14 +226,14 @@ r_squared_second_order = {}
 
 
 for i in range(0, len(df)-1):
-    if df['Value [mg]'][i] > 1500:
-        print('bingo')
+    #if df['Value [mg]'][i] > 1500:
+        #print('bingo')
 
     if (df['Value [mg]'][i]/(df['Value [mg]'][i-1]) > 1.01 and
                 i > 50
             ):  # so i is the location of the drastic gas change. Gas switch located!
         t = df['t [s]'][i]
-        print(f'accssed, t : {t}')
+        #print(f'accssed, t : {t}')
         df['Value [mg]'][i] = df['Value [mg]'][i-1]
         cooldown = 1
 
@@ -251,7 +254,7 @@ for i in range(0, len(df)-1):
             plt.show()
         data_to_plot = np.array(data_to_plot)
         plt.plot(time, data_to_plot, label=f'Cycle {c}')
-        print('added to plot')
+        #print('added to plot')
         #d_t_p = (data_to_plot)/()
         if c == 4:
             temp = int(df['Tr [°C]'][i])
@@ -454,14 +457,14 @@ for temp in conversions:
     r_squared_second_order[temp] = 1 - (ss_res_second / ss_tot_second)
 
 # Print rate constants and R² values
-print("First-Order Rate Constants:", rate_constants_first_order)
-print("First-Order R² Values:", r_squared_first_order)
-print("Second-Order Rate Constants:", rate_constants_second_order)
-print("Second-Order R² Values:", r_squared_second_order)
+# print("First-Order Rate Constants:", rate_constants_first_order)
+# print("First-Order R² Values:", r_squared_first_order)
+# print("Second-Order Rate Constants:", rate_constants_second_order)
+# print("Second-Order R² Values:", r_squared_second_order)
 
-# Print rate constants
-print("First-Order Rate Constants:", rate_constants_first_order)
-print("Second-Order Rate Constants:", rate_constants_second_order)
+# # Print rate constants
+# print("First-Order Rate Constants:", rate_constants_first_order)
+# print("Second-Order Rate Constants:", rate_constants_second_order)
 
 # Plot the fits for each model
 for temp in temperatures:
@@ -497,14 +500,14 @@ R = 8.314  # J/(mol*K), universal gas constant
 E_a = -slope * R
 A = np.exp(intercept)
 
-print(f"Activation Energy (E_a): {E_a} J/mol")
-print(f"Pre-exponential Factor (A): {A}")
+#print(f"Activation Energy (E_a): {E_a} J/mol")
+#print(f"Pre-exponential Factor (A): {A}")
 
 ln_k_pred = slope * inv_T + intercept
 
 # Calculate R-squared value
 r_squared = r2_score(ln_k, ln_k_pred)
-print(f"R-squared: {r_squared}")
+#print(f"R-squared: {r_squared}")
 
 # Plot the Arrhenius plot
 plt.plot(inv_T, ln_k, 'o', label='Data')
@@ -549,6 +552,19 @@ for i in range(len(target_conversions)):
     E = slope * 8.3144/1000 # calculating the activation energy from the slope.
     Act_energies.append(E)
     
+    if i ==97:
+        print('mr: ', target_conversions[i]*100)
+        print('slope: ', slope)
+        print('1/Temps: ', temps)
+        print('times: ', np.exp(temp_store_times))
+        print('logged times: ', temp_store_times)
+        plt.plot(temps, temp_store_times)
+        plt.xlabel('1/T')
+        plt.ylabel('ln(ta)')
+        plt.title('KOH/LFO')
+        plt.gca().xaxis.set_major_locator(MaxNLocator(nbins=7))  # Max 5 ticks on x-axis
+        plt.show()
+    
     
 # Act_energies[0]=0
 # Act_energies[1] = (Act_energies[2])/2
@@ -576,3 +592,195 @@ plt.show()
 # plt.tick_params(axis='both', which='major', labelsize=12)
 # plt.legend(fontsize=12)
 # plt.show()
+
+
+
+
+###############################################################################
+###############################################################################
+###############################################################################
+#                            OPTION B                                         #
+
+
+#file_path_3 = r'C:\Users\jrjol\OneDrive - University of Cambridge\Documents\Cambridge\Project\TGA DATA\Doped TGA 600 500 400 pellets\KOH_LFO_pellet_redox_300_400_500_600_1_g.txt'
+
+df3 = df_3 = pd.read_csv(
+    file_path_3,
+    delimiter='\s+',  # Assuming whitespace delimiter
+    skiprows=12,      # Skip the initial rows that are not part of the table
+    # Manually specifying the column names
+    names=["t [s]", "Ts [°C]", "Tr [°C]", "Value [mg]"],
+    encoding='ISO-8859-1'  # Specify the encoding (change if needed)
+)
+
+df3 = df3.apply(pd.to_numeric, errors='coerce').dropna()
+df3 = df3.iloc[:int(len(df3) / 2), :]
+
+cooldown = c =0
+conversions_b = {}
+
+
+for i in range(0, len(df3)-1):
+    #print(df['Value [mg]'][i]/df['Value [mg]'][i-1]/1.008>1)
+    if (df3['Value [mg]'][i]/(df3['Value [mg]'][i-1]) > 1.006 and
+                i > 100 and
+                cooldown == 0
+            ):  # so i is the location of the drastic gas change. Gas switch located!
+
+        df3['Value [mg]'][i+1] = df3['Value [mg]'][i] = df3['Value [mg]'][i-2]
+        df3['Value [mg]'][i+2] = df3['Value [mg]'][i] = df3['Value [mg]'][i-2]
+        df3['Value [mg]'][i+3] = df3['Value [mg]'][i] = df3['Value [mg]'][i-2]
+        cooldown = 1
+
+        if (is_within_ranges(df3['t [s]'][i+1], h2_start, h2_end)
+            ): # reduction taking place
+            df3['Value [mg]'][i] = 2000
+            t = df3['t [s]'][i]
+            #print(df['Value [mg]'][i], f'time: {t}')
+
+    cooldown -= 0.1
+    cooldown = max(cooldown, 0)
+    
+    
+for i in range(0, len(df3)-1):
+    #if df['Value [mg]'][i] > 1500:
+        #print('bingo')
+
+    if (df3['Value [mg]'][i]/(df3['Value [mg]'][i-1]) > 1.01 and
+                i > 50
+            ):  # so i is the location of the drastic gas change. Gas switch located!
+        t = df3['t [s]'][i]
+        #print(f'accssed, t : {t}')
+        df3['Value [mg]'][i] = df3['Value [mg]'][i-1]
+        cooldown = 1
+
+        data_to_plot = df3['Value [mg]'][i:(i+(2370//3))]
+        
+        d_t_p = (data_to_plot-data_to_plot[-1])/(data_to_plot[0]-data_to_plot[-1])
+        
+        time = np.array(df3['t [s]'][i:i+(2370//3)])-df3['t [s]'][i]
+        t = df3['t [s]'][i]
+        c += 1
+        # data_to_plot = (data_to_plot/_starting_mass-1)*100+100 # plot method
+        data_to_plot = data_to_plot/data_to_plot[0]  # plot method 2
+        data_to_plot = (1-data_to_plot)*100
+        # if i < 1050:
+        #     save = data_to_plot
+        #     plt.plot(np.array(data_to_plot))
+        #     plt.title(f'{t}')
+        #     plt.show()
+        data_to_plot = np.array(data_to_plot)
+        #plt.plot(time, data_to_plot, label=f'Cycle {c}')
+        #print('added to plot')
+        #d_t_p = (data_to_plot)/()
+        if c == 4:
+            temp = int(df3['Tr [°C]'][i])
+
+            # title_part1 = r'1LaFeO$_{3-δ}$:9Fe$_2$O$_3$'
+            # title_part2 = f'Reduction Curves {temp}°C'
+
+            # # Combine title parts and set the title
+            # plt.title(title_part1 + '\n' + title_part2, fontsize=12, pad=15)
+
+            # # Increase the font size for x-axis label
+            # plt.xlabel('H$_2$ Injection Time (Seconds)', fontsize=12)
+            # # Increase the font size for y-axis label
+            # plt.ylabel('Relative Mass Change (%)', fontsize=12)
+            # plt.tick_params(axis='both', which='major', labelsize=12)
+            # plt.legend(loc='center left', bbox_to_anchor=(1, 0.5), fontsize=12)
+            # plt.ylim(0, 5)  # Set y-axis limits here
+            # # ax.set_xlim(0,500)
+            # # Adjust the right side of the plot
+            # plt.tight_layout(rect=[0, 0, 0.75, 1])
+            # plt.show()
+            #fig2, ax2 = plt.subplots()
+            if temp == 500:
+               targ = data_to_plot[-1]
+               target_conversions_b = np.linspace(0.0001, targ/100, 100)
+
+            data_to_plot = np.append(data_to_plot, data_to_plot[-1])
+
+            conversions_b[int(temp)] = data_to_plot/100
+            
+            #conversions[int(temp)] = 1-d_t_p
+
+            c = 0
+
+    cooldown -= 0.1
+    cooldown = max(cooldown, 0)
+
+if target_conversions_b[-1]>target_conversions[-1]:
+    target_conversions = target_conversions
+else:
+    target_conversions = target_conversions_b
+time = np.linspace(0, time_steps*3, time_steps)
+
+times_for_target_conversions_b = get_times_for_target_conversions(conversions_b, time, target_conversions)
+time_for_target_conversions = get_times_for_target_conversions(conversions, time, target_conversions)
+
+del_act_E = []
+for i in range(len(target_conversions)):
+    temp_store_times = []
+
+    t_a_500 = conversions[500][i]
+    t_b_500 = conversions_b[500][i]
+    del_t_500 = t_b_500 - t_a_500
+    
+    t_a_600 = conversions[600][i]
+    t_b_600 = conversions_b[600][i]
+    del_t_600 = t_b_600 - t_a_600
+       
+
+    temps = np.array([1/(500+273.15), 1/(600+273.15)])
+    temp_store_times.append(del_t_500)
+    temp_store_times.append(del_t_600)
+    #temp_store_times.append(times_for_target_conversions[600][i])
+        
+    temp_store_times = np.log(temp_store_times)
+    
+    slope, y_intercept = np.polyfit(temps, temp_store_times, 1)
+
+    predicted_values = slope * temps + y_intercept
+
+    # Compute residuals
+    residuals = temp_store_times - predicted_values
+
+    ss_total = np.sum((temp_store_times - np.mean(temp_store_times))**2)
+    ss_residual = np.sum(residuals**2)
+    r_squared = 1 - (ss_residual / ss_total)
+    E = slope * 8.3144/1000 # calculating the activation energy from the slope.
+    del_act_E.append(E)
+    
+    # if i ==97:
+    #     print('mr: ', target_conversions[i]*100)
+    #     print('slope: ', slope)
+    #     print('1/Temps: ', temps)
+    #     print('times: ', np.exp(temp_store_times))
+    #     print('logged times: ', temp_store_times)
+    #     plt.plot(temps, temp_store_times)
+    #     plt.xlabel('1/T')
+    #     plt.ylabel('ln(ta)')
+    #     plt.title('KOH/LFO')
+    #     plt.gca().xaxis.set_major_locator(MaxNLocator(nbins=7))  # Max 5 ticks on x-axis
+    #     plt.show()
+    
+    
+# Act_energies[0]=0
+# Act_energies[1] = (Act_energies[2])/2
+
+#Act_energies[:3] = np.linspace(0, Act_energies[3], 3)
+
+KLFconversions = target_conversions
+Act_energies_KLF = Act_energies
+
+plt.plot(target_conversions*100, Act_energies)
+plt.xlabel('Relative Mass Loss (%)', fontsize=12)
+plt.ylabel('Delta Activation Energy (kJ/mol)', fontsize=12)
+plt.title('Change in Activation Energy (kJ/mol) vs Relative Mass Loss - LaFeO$_{3-δ}$', fontsize=12)
+plt.tick_params(axis='both', which='major', labelsize=12)
+#plt.ylim(0,140)
+#plt.xlim(0, 0.85)
+plt.show()
+
+
+
