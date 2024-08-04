@@ -26,7 +26,7 @@ index_start = 0  # no redox curves prior to this index.
 index_end = 89700//3  # no redox curves beyond this point
 _starting_mass = 67  # 77.9499#84.635
 # upper target conversions must be reasonably picked, 0.8*conversion_max_600degC
-target_conversions = np.linspace(0.0001, 0.76/100, 100)
+#target_conversions = np.linspace(0.0001, 0.3/100, 100)
 
 
 
@@ -39,7 +39,7 @@ file_path_1 corresponds to the TGA exported data.
 file_path_2 corresponds to the gas cycles used and their periods. This is the same
 file as the .txt file for the gas inlet controller programme.
 '''
-file_path_1 = r'C:\Users\jrjol\OneDrive - University of Cambridge\Documents\Cambridge\Project\TGA DATA\Doped TGA 600 500 400 pellets\1LFO_9Fe2o3_pel_redox_g.txt'
+file_path_1 = r'C:\Users\jrjol\OneDrive - University of Cambridge\Documents\Cambridge\Project\TGA DATA\LargePels\LFO_pellet_redox_300_400_500_600_g.txt'
 file_path_2 = r'C:\Users\jrjol\OneDrive - University of Cambridge\Documents\Cambridge\Project\TGA DATA\Doped TGA 600 500 400 pellets\JRJ_valve.txt'
 
 # Read the file with the appropriate encoding and skip initial rows
@@ -195,7 +195,9 @@ for i in range(0, len(df)-1):
                 plt.tight_layout(rect=[0, 0, 0.75, 1])
                 plt.show()
                # fig1, ax1 = plt.subplots()
-
+                # if temp == 500:
+                #    targ = data_to_plot[-1]/100
+                #    target_conversions = np.linspace(0.0001, targ/100, 100)
                 c = 0
 
         if (is_within_ranges(df['t [s]'][i+1], h2_start, h2_end)
@@ -272,6 +274,9 @@ for i in range(0, len(df)-1):
             plt.tight_layout(rect=[0, 0, 0.75, 1])
             plt.show()
             #fig2, ax2 = plt.subplots()
+            if temp == 500:
+               targ = data_to_plot[-1]
+               target_conversions = np.linspace(0.0001, targ/100, 200)
 
             data_to_plot = np.append(data_to_plot, data_to_plot[-1])
 
@@ -510,8 +515,9 @@ for i in range(len(target_conversions)):
 
     if (times_for_target_conversions[300][i] is None and 
           times_for_target_conversions[400][i] is not None):
-        temps = np.array([1/(400+273.15),1/(500+273.15), 1/(600+273.15)])
-        temp_store_times.append(times_for_target_conversions[400][i])
+        #temps = np.array([1/(400+273.15),1/(500+273.15), 1/(600+273.15)])
+        #temp_store_times.append(times_for_target_conversions[400][i])
+        temps = np.array([1/(500+273.15), 1/(600+273.15)])
         temp_store_times.append(times_for_target_conversions[500][i])
         temp_store_times.append(times_for_target_conversions[600][i])
     else:
