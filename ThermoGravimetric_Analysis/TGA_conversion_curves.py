@@ -100,7 +100,11 @@ def first_order_kinetics(t, k):
     return 1 - np.exp(-k * t)
 
 def second_order_kinetics(t, k):
-    return (k  * t) / ( k * t-1)
+    return (k  * t) / ( k * t+1)
+
+def n_th_order_kinetics(t, k): # independent variable is t, parameters to fit: t and n
+    n=2
+    return 1-(1/((-n+1)*(k*t+1/(n-1))))**(1/(n-1))
 
 
 def find_time_for_conversion(conversion_data, time_data, target, line):
@@ -221,8 +225,10 @@ cooldown = 0
 conversions = {}
 rate_constants_first_order = {}
 rate_constants_second_order = {}
+rate_constants_nth_order = {}
 r_squared_first_order = {}
 r_squared_second_order = {}
+r_squared_nth_order = {}
 
 
 for i in range(0, len(df)-1):
@@ -439,7 +445,12 @@ for temp in conversions:
     ### SECOND ORDER KINETICS MODEL ###
     popt_second, _ = curve_fit(second_order_kinetics, time, conversion)
     rate_constants_second_order[temp] = popt_second[0]
-
+    
+    ### nTH ORDER KINETICS MODEL ###
+    popt_nth, _ = curve_fit(n_th_order_kinetics, time, conversion)
+    rate_constants_nth_order[temp] = popt_nth[0]
+    
+    #rate_constants_first_order[int(600)] = 5e-6
     # Calculate predicted values
     predicted_first_order = first_order_kinetics(
         time, rate_constants_first_order[temp])
@@ -456,24 +467,26 @@ for temp in conversions:
     ss_tot_second = np.sum((conversion - np.mean(conversion)) ** 2)
     r_squared_second_order[temp] = 1 - (ss_res_second / ss_tot_second)
 
-# Print rate constants and R² values
-# print("First-Order Rate Constants:", rate_constants_first_order)
-# print("First-Order R² Values:", r_squared_first_order)
-# print("Second-Order Rate Constants:", rate_constants_second_order)
-# print("Second-Order R² Values:", r_squared_second_order)
+#Print rate constants and R² values
+print("First-Order Rate Constants:", rate_constants_first_order)
+print("First-Order R² Values:", r_squared_first_order)
+print("Second-Order Rate Constants:", rate_constants_second_order)
+print("Second-Order R² Values:", r_squared_second_order)
+print("nth order rate constants:", rate_constants_nth_order)
 
 # # Print rate constants
-# print("First-Order Rate Constants:", rate_constants_first_order)
-# print("Second-Order Rate Constants:", rate_constants_second_order)
+print("First-Order Rate Constants:", rate_constants_first_order)
+print("Second-Order Rate Constants:", rate_constants_second_order)
 
 # Plot the fits for each model
 for temp in temperatures:
-    conversion = conversions[temp]
-    plt.plot(time, conversion, 'o', label=f'Experimental Data {temp}°C')
-    plt.plot(time, first_order_kinetics(
-        time, rate_constants_first_order[temp]), '-', label=f'First-Order Fit {temp}°C')
-    plt.plot(time, second_order_kinetics(
-        time, rate_constants_second_order[temp]), '--', label=f'Second-Order Fit {temp}°C')
+    if int(temp ) == 600:
+        conversion = conversions[temp]
+        plt.plot(time, conversion, 'o', label=f'Experimental Data {temp}°C')
+        plt.plot(time, n_th_order_kinetics(
+            time, rate_constants_nth_order[temp]), '-', label=f'First-Order Fit {temp}°C')
+        # plt.plot(time, second_order_kinetics(
+        #     time, rate_constants_second_order[temp]), '--', label=f'Second-Order Fit {temp}°C')
 plt.xlabel('Time (s)')
 plt.ylabel('Conversion')
 plt.legend()
@@ -500,8 +513,8 @@ R = 8.314  # J/(mol*K), universal gas constant
 E_a = -slope * R
 A = np.exp(intercept)
 
-#print(f"Activation Energy (E_a): {E_a} J/mol")
-#print(f"Pre-exponential Factor (A): {A}")
+print(f"Activation Energy (E_a): {E_a} J/mol")
+print(f"Pre-exponential Factor (A): {A}")
 
 ln_k_pred = slope * inv_T + intercept
 
