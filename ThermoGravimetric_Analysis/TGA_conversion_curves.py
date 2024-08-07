@@ -40,7 +40,7 @@ file_path_1 corresponds to the TGA exported data.
 file_path_2 corresponds to the gas cycles used and their periods. This is the same
 file as the .txt file for the gas inlet controller programme.
 '''
-file_path_1 = r'C:\Users\jrjol\OneDrive - University of Cambridge\Documents\Cambridge\Project\TGA DATA\Doped TGA 600 500 400 pellets\LFO_pellet_redox_300_400_500_600_g.txt'
+file_path_1 = r'C:\Users\jrjol\OneDrive - University of Cambridge\Documents\Cambridge\Project\TGA DATA\Doped TGA 600 500 400 pellets\FeO_300_400.txt'
 file_path_2 = r'C:\Users\jrjol\OneDrive - University of Cambridge\Documents\Cambridge\Project\TGA DATA\Doped TGA 600 500 400 pellets\JRJ_valve.txt'
 file_path_3 = r'C:\Users\jrjol\OneDrive - University of Cambridge\Documents\Cambridge\Project\TGA DATA\Doped TGA 600 500 400 pellets\KOH_LFO_pellet_redox_300_400_500_600_1_g.txt'
 
@@ -184,28 +184,30 @@ for i in range(0, len(df)-1):
             # data_to_plot = (data_to_plot/_starting_mass-1)*100+100 # plot method 1
 
             data_to_plot = data_to_plot/data_to_plot[0]  # plot method 2
-            data_to_plot = (1-data_to_plot)*100
+            data_to_plot = np.array((1-data_to_plot)*100)
+            print(data_to_plot)
 
             # #data_to_plot = (data_to_plot-_starting_mass)/_starting_mass*100+100
             # #ax.plot(time, data_to_plot/_starting_mass*100, label=f'Curve {c}')
-            plt.plot(time, data_to_plot, label=f'Curve {c}, time {t}')
+            plt.plot(time, -data_to_plot, label=f'Curve {c}, time {t}')
 
-            # if c == 4:
-            #     temp = df['Tr [°C]'][i]
-            #     plt.title(f'Oxidation curves at {temp} °C')
-            #     plt.xlabel('CO$_2$ exposure time (seconds)')
-            #     plt.ylabel('Relative Mass Change (w.r.t 100%)')
-            #     #ax1.legend(loc='center left', bbox_to_anchor=(1, 0.5))
-            #     plt.ylim(94, 101.1)  # Set y-axis limits here
-            #     # ax.set_xlim(0,500)
-            #     # Adjust the right side of the plot
-            #     plt.tight_layout(rect=[0, 0, 0.75, 1])
-            #     plt.show()
-            #    # fig1, ax1 = plt.subplots()
-            #     # if temp == 500:
-            #     #    targ = data_to_plot[-1]/100
-            #     #    target_conversions = np.linspace(0.0001, targ/100, 100)
-            #     c = 0
+            if c == 4:
+                temp = df['Tr [°C]'][i]
+                plt.title(f'Oxidation curves at {temp} °C')
+                plt.xlabel('CO$_2$ exposure time (seconds)')
+                plt.ylabel('Relative Mass Gain (%)')
+                plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+                #plt.ylim(94, 101.1)  # Set y-axis limits here
+                # ax.set_xlim(0,500)
+                # Adjust the right side of the plot
+                plt.tight_layout(rect=[0, 0, 0.75, 1])
+                plt.show()
+                d = data_to_plot
+                # fig1, ax1 = plt.subplots()
+                # if temp == 500:
+                #    targ = data_to_plot[-1]/100
+                #    target_conversions = np.linspace(0.0001, targ/100, 100)
+                c = 0
 
         if (is_within_ranges(df['t [s]'][i+1], h2_start, h2_end)
             ): # reduction taking place
@@ -283,9 +285,9 @@ for i in range(0, len(df)-1):
             plt.tight_layout(rect=[0, 0, 0.75, 1])
             plt.show()
             #fig2, ax2 = plt.subplots()
-            if temp == 500:
+            if temp == 500: # using the 500 deg C data, this will determine the upper value of the isomass kinetics process.
                targ = data_to_plot[-1]
-               target_conversions = np.linspace(0.0001, targ/100, 100)
+               target_conversions = np.linspace(0.0001, targ/100, 100) # here are the target isoconversion, with the upper limit being bounded by the 500 deg C data, not 600 deg C data.
 
             data_to_plot = np.append(data_to_plot, data_to_plot[-1])
 
@@ -379,7 +381,7 @@ ax1.set_xlabel('Time [s]', fontsize=12)
 ax1.set_ylabel('Relative Mass Change (%)', color='b', fontsize=12)
 ax1.tick_params(axis='y', labelcolor='b', labelsize=12)
 ax1.tick_params(axis='x',  labelsize=12)
-ax1.set_ylim(97.3, 100.50)
+#ax1.set_ylim(97.3, 100.50)
 
 # Create a second y-axis
 ax2 = ax1.twinx()
@@ -483,10 +485,10 @@ for temp in temperatures:
     if int(temp ) == 600:
         conversion = conversions[temp]
         plt.plot(time, conversion, 'o', label=f'Experimental Data {temp}°C')
-        plt.plot(time, n_th_order_kinetics(
-            time, rate_constants_nth_order[temp]), '-', label=f'First-Order Fit {temp}°C')
-        # plt.plot(time, second_order_kinetics(
-        #     time, rate_constants_second_order[temp]), '--', label=f'Second-Order Fit {temp}°C')
+        # plt.plot(time, n_th_order_kinetics(
+        #     time, rate_constants_nth_order[temp]), '-', label=f'First-Order Fit {temp}°C')
+        plt.plot(time, second_order_kinetics(
+            time, rate_constants_second_order[temp]), '--', label=f'Second-Order Fit {temp}°C')
 plt.xlabel('Time (s)')
 plt.ylabel('Conversion')
 plt.legend()
