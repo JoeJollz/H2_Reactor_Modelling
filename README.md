@@ -1,1 +1,3 @@
-![Lithium Bromide - Water Absorption Cooling Cycle](PBReactor.JPG)
+![Packed Bed Reactor](PBReactor.jpg)
+
+![Packed Bed Reactor wider set up](PBReactor.jpg)
